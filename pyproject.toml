@@ -1,0 +1,41 @@
+[project]
+name = "hounddog-test-python"
+version = "0.1.0"
+description = "Streamlit medical data app used as a HoundDog.ai scanner test fixture"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "langchain-core>=1.6.4",
+    "langchain-openai>=1.6.5",
+    "pandas>=3.0.6",
+    "pillow>=12.3.0",
+    "plotly>=7.1.0",
+    "pypdf>=6.19.0",
+    "python-dotenv>=1.2.3",
+    "sentry-sdk>=2.70.0",
+    "sqlalchemy>=2.0.54",
+    "streamlit>=1.64.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.16.8",
+]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "UP", "W"]
+
+[tool.ruff.lint.per-file-ignores]
+# Scripts put the project root on sys.path before importing the app modules.
+"scripts/*" = ["E402"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["utils"]
+
+[tool.uv]
+# Only resolve releases that are at least a week old (supply-chain cooldown). Kept in the project so local and CI
+# resolutions agree; .github/dependabot.yml uses the same cooldown.
+exclude-newer = "7 days"
