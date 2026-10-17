@@ -8,9 +8,9 @@ dependencies = [
     "langchain-core>=1.6.4",
     "langchain-openai>=1.6.5",
     "pandas>=3.0.6",
-    "pillow>=12.3.0",
+    "pillow>=13.0.0",
     "plotly>=7.1.0",
-    "pypdf>=6.19.0",
+    "pypdf>=6.21.4",
     "python-dotenv>=1.2.3",
     "sentry-sdk>=2.70.0",
     "sqlalchemy>=2.0.54",
@@ -39,3 +39,6 @@ known-first-party = ["utils"]
 # Only resolve releases that are at least a week old (supply-chain cooldown). Kept in the project so local and CI
 # resolutions agree; .github/dependabot.yml uses the same cooldown.
 exclude-newer = "7 days"
+# pypdf 6.21.4 (2026-10-28) fixes advisories that affect every earlier version, so it skips most of the cooldown.
+# Remove this once the cooldown passes 6.21.4, on 2026-11-05.
+exclude-newer-package = { pypdf = "4 days" }
