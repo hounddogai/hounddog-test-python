@@ -1,4 +1,4 @@
-name: Run HoundDog.ai Scan
+name: HoundDog.ai Scan
 
 on:
   push:
@@ -18,17 +18,27 @@ permissions:
 
 jobs:
   scan:
-    name: Run HoundDog.ai Scan
+    name: HoundDog.ai Scan
     runs-on: ubuntu-latest
+    # Dependabot's runs get no secrets, so they cannot upload results.
     if: github.actor != 'dependabot[bot]'
     container:
-      image: hounddogai/hounddog:staging
-      options: --pull=always
+      image: hounddogai/hounddog:4.0.0@sha256:7e041bb98ccffcc179f3b2c1d774edd0bc05ffecd6cbe9d600434449426bff9a
     env:
-      HOUNDDOG_ENV: staging
-      HOUNDDOG_API_KEY: ${{ secrets.HOUNDDOG_API_KEY_STAGING }}
+      HOUNDDOG_API_KEY: ${{ secrets.HOUNDDOG_API_KEY }}
+      # The scanner needs to know the branch, which a detached checkout does not name.
+      HOUNDDOG_GIT_BRANCH: ${{ github.ref_name }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
-      - name: Run HoundDog.ai Scan
-        run: hounddog scan ${{ inputs.debug && '--debug' || '' }}
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: HoundDog.ai Scan
+        run: |
+          # Without a key the scanner would scan without uploading the results, so fail instead.
+          if [ -z "$HOUNDDOG_API_KEY" ]; then
+            echo "::error::The HOUNDDOG_API_KEY secret is not set."
+            exit 1
+          fi
+          # Scanner 4 must scan the repository root, which is not the image's working directory.
+          hounddog scan "$GITHUB_WORKSPACE" ${{ inputs.debug && '--debug' || '' }}
